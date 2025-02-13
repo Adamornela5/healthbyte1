@@ -12,9 +12,6 @@ function App() {
         <p>
           Blahblahblah2
         </p>
-        <p>
-          This is a test
-        </p>
         <a
           className="App-link"
           href="https://reactjs.org"

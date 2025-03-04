@@ -1,7 +1,7 @@
 export default function Offers() {
     return(
         <div>
-          Sign In  
+          Offers  
         </div>
     )
 }

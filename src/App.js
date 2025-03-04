@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { BrowserRouter as Router, Routes, Route } from 'react-router';
 import Home from './Pages/Home';
 import Offers from './Pages/Offers';
@@ -6,21 +5,12 @@ import Profile from './Pages/Profile';
 import SignIn from './Pages/SignIn';
 import SignUp from './Pages/SignUp';
 import ForgotPassword from './Pages/ForgotPassword';
-=======
-import { BrowserRouter as Router, Routes, Route } from "react-router";
-import Profile from "./Pages/Profile";
-import ForgotPassword from "./Pages/ForgotPassword";
-import Home from "./Pages/Home";
-import Offers from "./Pages/Offers";
-import SignIn from "./Pages/SignIn";
-import SignUp from "./Pages/SignUp";
-import Header from ".components/Header";
->>>>>>> 33649240064ab3e5b9b647468746dce77b7b4403
+import Header from './components/Header';
 
 function App() {
   return (
     <Router>
-      <Header/>
+     <Header/> 
       <Routes>
         <Route path="/" element={<Home/>}></Route>
         <Route path="/Offers" element={<Offers/>}></Route>

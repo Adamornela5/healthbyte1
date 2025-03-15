@@ -1,5 +1,5 @@
 import { useState } from "react"
-
+import { Link } from "react-router-dom"
 import OAuth from "../components/OAuth";
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -27,12 +27,12 @@ export default function ForgotPassword() {
                 <div className="flex justify-between whitespace-nowrap text-sm sm:text-lg">
                   <p className="mb-6">
                     Don't have a account?
-                    <link to="/sign-up"
-                    className="text-red-600 hover:text-red-700 transition duration-200 ease-ini-out ml-1"></link>
+                    <Link to="/sign-up"
+                    className="text-red-600 hover:text-red-700 transition duration-200 ease-ini-out ml-1"></Link>
                   </p>
                   <p>
-                    <link to="/sign-in"
-                    className="text-blue-600 hover:text-blue-700 transition duration-200 ease-ini-out">Sign in instead</link>
+                    <Link to="/sign-up"
+                    className="text-blue-600 hover:text-blue-700 transition duration-200 ease-ini-out">Sign Up instead!</Link>
                   </p>
                 </div>
                 <button className="w-full bg-blue-600 text-white px-7 py-3 text-sm font-medium uppercase rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg active:bg-blue 800"

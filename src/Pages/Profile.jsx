@@ -1,9 +1,10 @@
 import { useState } from "react"
 import {getAuth, updateProfile} from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { toast } from "react-toastify";
+import { CiForkAndKnife } from "react-icons/ci";
 
 export default function Profile() {
   const auth = getAuth()
@@ -73,11 +74,22 @@ export default function Profile() {
                   className="text-red-600 hover:text-red-700 transition ease-in-out duration-200 ml-1 cursor-pointer">{changeDetail ? "Apply change" : "Edit"}</span>
                 </p>
                 <p onClick={onLogout} className="text-blue-600 hover:text-blue-800 transition duration-200 ease-in-out cursor-pointer">Sign out</p>
-                
+              
               </div>
 
             </form>
-          </div>
+            {/*change color to match the health color */}
+            <button type="submit" className="w-full bg-blue-600 text-white uppercase px-7 py-3 text-sm font-medium 
+            rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg
+            active:bg-blue-800">
+              {/*Change create listing to create meal */} 
+              <Link to="/create-meal" className="flex justify-center items-center">
+              {/* this section is to have the ability to add a recipe */} 
+            <CiForkAndKnife className="mr-2 text-3xl "/>
+              Create Meal 
+              </Link>
+            </button>
+          </div> 
         </section>
         </>
     )

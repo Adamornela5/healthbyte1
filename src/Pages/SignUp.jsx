@@ -16,6 +16,7 @@ export default function SignUp() {
     password: "",
   });
   const { name, email, password } = formData;
+  //eslint-disable-next-line
   const navigate = useNavigate()
   function onChange(e){
    setFormData((prevState)=>({

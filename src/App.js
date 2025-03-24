@@ -9,6 +9,7 @@ import Header from './components/Header';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PrivateRoute from './components/PrivateRoute';
+import CreateMeal from './Pages/CreateMeal';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/offers" element={<Offers />}></Route>
+        <Route path="/create-meal" element={<CreateMeal />}></Route>
         <Route path = "/profile" element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />}/>
         </Route>

@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PrivateRoute from './components/PrivateRoute';
 import CreateMeal from './Pages/CreateMeal';
+import EditListing from './Pages/EditListing';
 
 function App() {
   return (
@@ -19,7 +20,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/offers" element={<Offers />}></Route>
-        <Route path="/create-meal" element={<CreateMeal />}></Route>
+
+        <Route path="/create-meal" element={<PrivateRoute />}>
+          <Route path="/create-meal" element={<CreateMeal />}></Route>
+        </Route>
+
+        <Route path="/edit-listing" element={<PrivateRoute />}>
+          <Route path="/edit-listing/:listingId" element={<EditListing />}></Route>
+        </Route>
+        
         <Route path = "/profile" element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />}/>
         </Route>

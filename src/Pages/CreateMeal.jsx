@@ -14,7 +14,7 @@ CreateMeal() {
     const auth = getAuth()
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        type: "rent",
+        type: "healthy",
         name:"",
         description:"",
         calories:"",
@@ -126,31 +126,31 @@ CreateMeal() {
 
                 {/*We can make this page become where we deicde how i*/}
 
-                <p className="text-lg mt-6 font-semibold">Sell / Rent</p>
+                <p className="text-lg mt-6 font-semibold">Healthy or Unhealthy?</p>
                 <div className="flex">
                     <button type="button" 
                     id="type" 
-                    value="sale"
+                    value="healthy" // rent is healthy
 
                     /*Change color to green or black*/
 
                     onClick={onChange} 
                     className={`mr-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded
                     hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                        type === "rent" ? "bg-white text-black": "bg-slate-600 text-white"
+                        type === "healthy" ? "bg-slate-600 text-white" : "bg-white text-black"
                     }`}>
-                        sell
+                        Healthy
 
                     </button>
                     <button type="button" 
                     id="type" 
-                    value="rent"
+                    value="unhealthy"
                     onClick={onChange}                    /*Change color to green or black*/
                     className={`ml-3 px-7 py-3 font-medium text-sm uppercase shadow-md rounded
                     hover:shadow-lg focus:shadow-lg active:shadow-lg transition duration-150 ease-in-out w-full ${
-                        type === "sale" ? "bg-white text-black": "bg-slate-600 text-white"
+                        type === "unhealthy" ? "bg-slate-600 text-white" : "bg-white text-black"
                     }`}>
-                        rent
+                        Unhealthy
 
                     </button>
                 </div>

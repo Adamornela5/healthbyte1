@@ -13,6 +13,7 @@ import CreateMeal from './Pages/CreateMeal';
 import EditListing from './Pages/EditListing';
 import Listing from './Pages/Listing';
 import Category from './Pages/Category';
+import CreateUserName from './Pages/CreateUserName';
 
 function App() {
   return (
@@ -31,6 +32,10 @@ function App() {
 
         <Route path="/edit-recipe" element={<PrivateRoute />}>
           <Route path="/edit-recipe/:listingId" element={<EditListing />}></Route>
+        </Route>
+
+        <Route path = "/create-username" element={<PrivateRoute />}>
+          <Route path="/create-username" element={<CreateUserName />}/>
         </Route>
         
         <Route path = "/profile" element={<PrivateRoute />}>

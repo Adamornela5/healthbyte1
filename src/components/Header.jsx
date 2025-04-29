@@ -33,6 +33,7 @@ export default function Header() {
       <header className="flex justify-between items-center px-3 max-w-6xl mx-auto">
         <div>
           <button
+            onClick={() => navigate("/")}
             className="overflow-hidden relative w-32 p-2 h-12 bg-white text-black border-none rounded-md text-xl font-bold cursor-pointer relative z-10 group"
           >
             HealthByte

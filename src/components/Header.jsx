@@ -51,6 +51,14 @@ export default function Header() {
               Recipes
             </li>
             <li
+               className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
+                pathMatchRoute("/randomizer") && "text-black border-b-red-500"
+               }`}
+               onClick={() => navigate("/randomizer")}
+            >
+              Randomizer
+            </li>
+            <li
               className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${
                 (pathMatchRoute("/sign-in") || pathMatchRoute("/profile")) && "text-black border-b-red-500"
               }`}

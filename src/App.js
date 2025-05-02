@@ -14,6 +14,7 @@ import EditListing from './Pages/EditListing';
 import Listing from './Pages/Listing';
 import Category from './Pages/Category';
 import CreateUserName from './Pages/CreateUserName';
+import Randomizer from './Pages/Randomizer';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
         <Route path="/sign-in" element={<SignIn />}></Route>
         <Route path="/sign-up" element={<SignUp />}></Route>
         <Route path="/forgot-password" element={<ForgotPassword />}></Route>
+        <Route path="/randomizer" element={<Randomizer />} />
       </Routes>
     </Router>
     <ToastContainer 

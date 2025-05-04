@@ -72,8 +72,8 @@ export default function Listing() {
       <p className="fixed top-[23%] right-[5%] font-semibold border-2 border-gray-400 rounded-md bg-white z-10 p-2">LinkCopied</p>
     )}
 
-    <div className="m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded lg shadow-lg bg-white lg:space-x-5">
-      <div className=" w-full h-[200px] lg-[400px]">
+    <div className="m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded shadow-lg bg-white lg:space-x-5 overflow-hidden">
+      <div className="w-full">
         <p className="text-2xl font-bold mb-3 text-blue-900">
           {listing.name} {listing.calories
                         .toString()
@@ -87,7 +87,7 @@ export default function Listing() {
                   </p>             
       </div>
 
-      <p className="mt-3 mb-3">
+      <p className="mt-3 mb-3 break-words">
                   <span className="font-semibold">Description - </span>
                   {listing.description}
                   </p>

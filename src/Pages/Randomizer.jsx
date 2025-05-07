@@ -104,14 +104,9 @@ export default function Randomizer() {
           className={`px-4 py-2 rounded ${category === "unhealthy" ? "bg-red-600 text-white" : "bg-gray-200"}`}
         >
           Unhealthy
-        </button>
-        <button 
-          onClick={() => setCategory("Liked")}
-          className={`px-4 py-2 rounded ${category === "Liked" ? "bg-red-600 text-white" : "bg-gray-200"}`}
-        >
-          Liked
-        </button>
-      </div>
+        </button>      
+        
+        </div>
 
       <div className="flex flex-col items-center">
         <button

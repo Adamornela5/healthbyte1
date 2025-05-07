@@ -13,6 +13,9 @@ import "swiper/css/pagination"
 
 import { FaShare } from "react-icons/fa";
 
+import LikeButton from "../components/LikeButton"
+import { getAuth } from "firebase/auth" // For the like button cause we need to check if they are authenticated or not
+
 export default function Listing() {
 
     const params = useParams()
@@ -74,17 +77,50 @@ export default function Listing() {
 
     <div className="m-4 flex flex-col md:flex-row max-w-6xl lg:mx-auto p-4 rounded shadow-lg bg-white lg:space-x-5 overflow-hidden">
       <div className="w-full">
-        <p className="text-2xl font-bold mb-3 text-blue-900">
-          {listing.name} {listing.calories
-                        .toString()
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, ",") // this is to convert for example 123456 to 123,456
-                    } Calories
-        </p>
-      
+        
+
       <div className="flex justify-start items-center space-x-4 w-[75%]">
-                  <p className="bg-red-800 w-full max-w-[200px] rounded-md p-1 text-white text-center font-semibold shadow-md">
-                    {listing.type === "healthy" ? "Healthy" : "Unhealthy"}
-                  </p>             
+        <span className="text-2xl font-bold mb-3 text-blue-900">
+          {listing.name} 
+        </span>
+        <span className="text-[#457b9d] font-semibold mb-3">
+            🔥 {listing.calories?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} Calories
+          </span>
+          </div>
+          
+
+      <div className="flex justify-start items-center space-x-4 w-[75%]">
+      
+      
+      
+      <span className={`px-3 py-1 rounded-full text-white ${listing.type === "healthy" ? "bg-green-500" : "bg-red-500"}`}>
+                {listing.type}
+              </span>
+                  
+      <LikeButton
+        listingId={params.listingId}
+        initialCount={listing.likes || 0}
+        initialLiked={(listing.likedBy || []).includes(getAuth().currentUser?.uid)}
+        />
+      <div className="flex items-center gap-2 w-full max-w-xl">
+      <p className="text-sm text-gray-700 whitespace-nowrap">⭐ Health: {listing.healthRating}/10</p>
+      <div className="w-full bg-gray-200 rounded-full h-1">
+        <div
+          className="bg-green-500 h-1 rounded-full"
+          style={{ width: `${(listing.healthRating / 10) * 100}%` }}
+        >
+        </div>
+      </div>
+      
+      <p className="text-xs text-gray-500 whitespace-nowrap">
+        {listing.healthRating <= 3
+          ? "🧨 Treat Yo Self"
+          : listing.healthRating <= 6
+          ? "😌 Balanced"
+          : "💪 Super Clean"}
+      </p>
+
+      </div>          
       </div>
 
       <p className="mt-3 mb-3 break-words">
@@ -92,8 +128,6 @@ export default function Listing() {
                   {listing.description}
                   </p>
       
-      </div>
-      <div className="bg-blue-300 w-full h-[200px] lg-[400px] z-10 overflow-x-hidden">
       </div>
     </div>
   </main>

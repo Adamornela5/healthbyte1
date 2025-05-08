@@ -114,7 +114,9 @@ export default function Profile() {
   return (
     <>
       <section className="max-w-6xl mx-auto flex justify-center items-center flex-col">
-        <h1 className="text-3xl text-center mt-6 font-bold">My Profile</h1>
+      <h1 className="text-4xl text-center mt-10 font-extrabold text-amber-800 tracking-tight drop-shadow-sm italic">My Profile</h1>
+
+
         <div className="w-full md:w-[50%] mt-6 px-3">
           <form>
             <input
@@ -176,7 +178,10 @@ export default function Profile() {
       <div className="max-w-6xl px-3 mt-6 mx-auto">
         {!loading && listings.length > 0 && (
           <>
-            <h2 className="text-2xl text-center font-semibold mb-6 mt-6">My Recipes</h2>
+            <h2 className="text-2xl text-center font-semibold mt-6 mb-4 text-gray-800 tracking-wide underline decoration-wavy decoration-orange-400">
+  🍳 My Recipes
+</h2>
+
             <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl-grid-cols-5 mt-6 mb-6">
               {listings.map((listing) => (
                 <ListingItem
@@ -196,7 +201,8 @@ export default function Profile() {
       <div className="max-w-6xl px-3 mt-6 mx-auto">
         {!loadingLikedRecipes && likedRecipes.length > 0 && (
           <>
-            <h2 className="text-2xl text-center font-semibold mb-6 mt-6">Liked Recipes</h2>
+            <h2 className="text-2xl text-center font-semibold mt-6 mb-4 text-gray-700 italic">❤️ Liked Recipes</h2>
+
             <ul className="sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl-grid-cols-5 mt-6 mb-6">
               {likedRecipes.map((listing) => (
                 <ListingItem

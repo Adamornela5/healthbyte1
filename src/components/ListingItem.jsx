@@ -1,12 +1,33 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { FaTrash } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import { getAuth } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
 import LikeButton from "./LikeButton";
 
 export default function ListingItem({ listing, id, onEdit, onDelete }) {
   const auth = getAuth();
+  const [username, setUsername] = useState("");
+
+  useEffect(() => {
+    async function fetchUsername() {
+      if (listing.userRef) {
+        try {
+          const userDoc = await getDoc(doc(db, "users", listing.userRef));
+          if (userDoc.exists()) {
+            setUsername(userDoc.data().username || "unknown");
+          }
+        } catch (error) {
+          console.error("Error fetching username:", error);
+        }
+      }
+    }
+
+    fetchUsername();
+  }, [listing.userRef]);
 
   return (
     <li className="relative bg-white flex flex-col justify-between items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]">
@@ -25,23 +46,29 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
 
         <div className="w-full p-[10px] space-y-2">
           <p className="font-semibold text-xl truncate">{listing.name}</p>
+
+          {/* Username display */}
+          <p className="text-sm text-blue-500 truncate">@{username}</p>
+
           <p className="text-[#457b9d] font-semibold">
             🔥 {listing.calories?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} Calories
           </p>
           <p className="text-sm text-gray-700">⭐ Health: {listing.healthRating}/10</p>
-<div className="w-full bg-gray-200 rounded-full h-1">
-  <div
-    className="bg-green-500 h-1 rounded-full"
-    style={{ width: `${(listing.healthRating / 10) * 100}%` }}
-  ></div>
-</div>
-<p className="text-xs text-gray-500 mt-1">
-  {listing.healthRating <= 3
-    ? "🧨 Treat Yo Self"
-    : listing.healthRating <= 6
-    ? "😌 Balanced"
-    : "💪 Super Clean"}
-</p>
+
+          <div className="w-full bg-gray-200 rounded-full h-1">
+            <div
+              className="bg-green-500 h-1 rounded-full"
+              style={{ width: `${(listing.healthRating / 10) * 100}%` }}
+            ></div>
+          </div>
+
+          <p className="text-xs text-gray-500 mt-1">
+            {listing.healthRating <= 3
+              ? "🧨 Treat Yo Self"
+              : listing.healthRating <= 6
+              ? "😌 Balanced"
+              : "💪 Super Clean"}
+          </p>
 
           {listing.tags && (
             <div className="flex flex-wrap gap-1 mt-1">

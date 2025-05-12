@@ -1,163 +1,144 @@
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where, doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { db } from "../firebase";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
-import { Link } from "react-router-dom";
+import ListingItem from "../components/ListingItem";
 import { getAuth } from "firebase/auth";
 
 export default function Randomizer() {
-  const [randomRecipe, setRandomRecipe] = useState(null);
+  const [randomListing, setRandomListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("all");
-  const [isLiked, setIsLiked] = useState(false);
   const auth = getAuth();
 
   useEffect(() => {
-    async function fetchRandomRecipe() {
-      try {
-        let listingsRef = collection(db, "listings");
+    fetchRandomListing();
+  }, [category]);
 
-        if (category !== "all") {
-          listingsRef = query(listingsRef, where("type", "==", category));
-        }
-
-        const querySnap = await getDocs(listingsRef);
-        const recipes = [];
-
-        querySnap.forEach((doc) => {
-          recipes.push({
-            id: doc.id,
-            data: doc.data(),
-          });
-        });
-
-        if (recipes.length > 0) {
-          const randomIndex = Math.floor(Math.random() * recipes.length);
-          const selected = recipes[randomIndex];
-          setRandomRecipe(selected);
-
-          // Check if user has liked this recipe
-          if (auth.currentUser) {
-            const likedBy = selected.data.likedBy || [];
-            setIsLiked(likedBy.includes(auth.currentUser.uid));
-          }
-        } else {
-          toast.info("No recipes found in this category");
-        }
-
-        setLoading(false);
-      } catch (error) {
-        toast.error("Could not fetch recipes");
-        setLoading(false);
-      }
-    }
-
-    fetchRandomRecipe();
-  }, [category, loading]);
-
-  function generateRandom() {
+  async function fetchRandomListing() {
     setLoading(true);
-    setRandomRecipe(null);
-  }
-
-  async function toggleLike() {
-    if (!auth.currentUser || !randomRecipe) return;
-
-    const recipeRef = doc(db, "listings", randomRecipe.id);
-    const userId = auth.currentUser.uid;
+    setRandomListing(null);
 
     try {
-      await updateDoc(recipeRef, {
-        likedBy: isLiked ? arrayRemove(userId) : arrayUnion(userId),
+      let listingsRef = collection(db, "listings");
+
+      if (category !== "all") {
+        listingsRef = query(listingsRef, where("type", "==", category));
+      }
+
+      const querySnap = await getDocs(listingsRef);
+      const listings = [];
+
+      querySnap.forEach((doc) => {
+        listings.push({ id: doc.id, data: doc.data() });
       });
-      setIsLiked(!isLiked);
+
+      if (listings.length === 0) {
+        toast.info("No recipes found in this category");
+        setLoading(false);
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * listings.length);
+      setRandomListing(listings[randomIndex]);
+      setLoading(false);
     } catch (error) {
-      toast.error("Failed to update like");
-      console.error(error);
+      console.error("Error fetching listings:", error);
+      toast.error("Could not fetch recipes");
+      setLoading(false);
     }
   }
 
-  if (loading) {
-    return <Spinner />;
-  }
+  if (loading) return <Spinner />;
 
   return (
     <div className="max-w-6xl mx-auto px-3 py-6">
       <h1 className="text-3xl text-center font-bold mb-6">Recipe Randomizer</h1>
 
-      <div className="flex justify-center mb-8 gap-4">
-        <button
-          onClick={() => setCategory("all")}
-          className={`px-4 py-2 rounded ${category === "all" ? "bg-blue-600 text-white" : "bg-gray-200"}`}
-        >
-          Any Type
-        </button>
-        <button
-          onClick={() => setCategory("healthy")}
-          className={`px-4 py-2 rounded ${category === "healthy" ? "bg-green-600 text-white" : "bg-gray-200"}`}
-        >
-          Healthy
-        </button>
-        <button
-          onClick={() => setCategory("unhealthy")}
-          className={`px-4 py-2 rounded ${category === "unhealthy" ? "bg-red-600 text-white" : "bg-gray-200"}`}
-        >
-          Unhealthy
-        </button>      
-        
-        </div>
+      {/* Category Filter Buttons */}
+      <div className="flex justify-center mb-2 gap-4">
+        {["all", "healthy", "unhealthy"].map((type) => (
+          <button
+            key={type}
+            onClick={() => setCategory(type)}
+            className={`px-4 py-2 rounded ${
+              category === type ? "bg-blue-600 text-white" : "bg-gray-200"
+            }`}
+          >
+            {type === "all" ? "Any Type" : type.charAt(0).toUpperCase() + type.slice(1)}
+          </button>
+        ))}
+      </div>
 
+      {/* Generate Button */}
       <div className="flex flex-col items-center">
-        <button
-          onClick={generateRandom}
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-medium mb-8 hover:bg-blue-700 transition"
-        >
-          Generate Random Recipe 
-        </button>
-
-        {randomRecipe ? (
-          <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-2xl">
-            {randomRecipe.data.imgUrls && randomRecipe.data.imgUrls.length > 0 && (
-              <img
-                src={randomRecipe.data.imgUrls[0]}
-                alt={randomRecipe.data.name}
-                className="w-full h-80 object-cover rounded-md mb-4 mx-auto"
-              />
-            )}
-
-            <h2 className="text-2xl font-bold mb-2">{randomRecipe.data.name}</h2>
-            <p className="text-gray-600 mb-4">{randomRecipe.data.calories} calories</p>
-            <p className="mb-4">{randomRecipe.data.description}</p>
-
-            <div className="flex justify-between items-center mt-4">
-              <span className={`px-3 py-1 rounded-full text-white ${
-                randomRecipe.data.type === "healthy" ? "bg-green-500" : "bg-red-500"
-              }`}>
-                {randomRecipe.data.type}
-              </span>
-
-              <button
-                onClick={toggleLike}
-                className={`text-xl ${
-                  isLiked ? "text-red-500" : "text-gray-400"
-                } hover:text-red-600 transition`}
-              >
-                {isLiked ? "♥" : "♡"} Like
-              </button>
-            </div>
-
-            <Link
-              to={`/category/${randomRecipe.data.type}/${randomRecipe.id}`}
-              className="text-blue-600 hover:underline mt-4 inline-block"
-            >
-              View Details
-            </Link>
-          </div>
+        {/* Display the Random Listing */}
+        {randomListing ? (
+          <ul className="sm:grid sm:grid-cols-1 mt-6 mb-6">
+            <ListingItem
+              key={randomListing.id}
+              id={randomListing.id}
+              listing={randomListing.data}
+              showActions={false}
+            />
+          </ul>
         ) : (
           <p className="text-gray-500">No recipes available in this category</p>
         )}
+        
+       
+<button
+  onClick={fetchRandomListing}
+  class="relative inline-flex items-center justify-center px-8 py-2.5 overflow-hidden tracking-tighter text-white bg-gray-800 rounded-md group"
+>
+  <span
+    class="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-600 rounded-full group-hover:w-56 group-hover:h-56"
+  ></span>
+  <span class="absolute bottom-0 left-0 h-full -ml-2">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-auto h-full opacity-100 object-stretch"
+      viewBox="0 0 487 487"
+    >
+      <path
+        fill-opacity=".1"
+        fill-rule="nonzero"
+        fill="#FFF"
+        d="M0 .3c67 2.1 134.1 4.3 186.3 37 52.2 32.7 89.6 95.8 112.8 150.6 23.2 54.8 32.3 101.4 61.2 149.9 28.9 48.4 77.7 98.8 126.4 149.2H0V.3z"
+      ></path>
+    </svg>
+  </span>
+  <span class="absolute top-0 right-0 w-12 h-full -mr-3">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="object-cover w-full h-full"
+      viewBox="0 0 487 487"
+    >
+      <path
+        fill-opacity=".1"
+        fill-rule="nonzero"
+        fill="#FFF"
+        d="M487 486.7c-66.1-3.6-132.3-7.3-186.3-37s-95.9-85.3-126.2-137.2c-30.4-51.8-49.3-99.9-76.5-151.4C70.9 109.6 35.6 54.8.3 0H487v486.7z"
+      ></path>
+    </svg>
+  </span>
+  <span
+    class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-gray-200"
+  ></span>
+  <span class="relative text-base font-semibold">    Next    </span>
+</button>
+
+
+
+  
       </div>
     </div>
   );
 }
+

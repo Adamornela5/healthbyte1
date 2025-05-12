@@ -36,113 +36,85 @@ export default function CreateMeal() {
   }
 
   async function onSubmit(e) {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  if (!images || images.length === 0) {
-    toast.error("Please select at least one image.");
-    setLoading(false);
-    return;
-  }
-
-  if (images.length > 6) {
-    toast.error("Maximum of 6 images allowed.");
-    setLoading(false);
-    return;
-  }
-
-  const convertedImages = [];
-
-  // Debug: log incoming files
-  console.log("Selected files:", images);
-
-  for (let file of images) {
-    const fileName = file.name.toLowerCase();
-    const fileType = file.type;
-
-    console.log("File:", file.name, "| Type:", file.type);
-
-    const isHeic =
-      fileType === "image/heic" ||
-      fileType === "image/heif" ||
-      fileName.endsWith(".heic") ||
-      fileName.endsWith(".heif");
-
-    if (isHeic) {
-      try {
-        const convertedBlob = await heic2any({
-          blob: file,
-          toType: "image/jpeg",
-          quality: 0.9,
-        });
-
-        const jpegFile = new File([convertedBlob], `${file.name}.jpeg`, {
-          type: "image/jpeg",
-        });
-
-        convertedImages.push(jpegFile);
-      } catch (error) {
-        console.error("HEIC conversion failed:", error);
-        toast.error("Failed to convert HEIC image.");
-        setLoading(false);
-        return;
-      }
-    } else if (
-      fileType === "image/jpeg" ||
-      fileType === "image/png" ||
-      fileName.endsWith(".jpg") ||
-      fileName.endsWith(".jpeg") ||
-      fileName.endsWith(".png")
-    ) {
-      convertedImages.push(file);
-    } else {
-      toast.error(`Unsupported file type: ${file.name}`);
+    if (images.length > 6) {
       setLoading(false);
+      toast.error("Maximum of 6 images allowed");
       return;
     }
-  }
 
-  // Upload to Firebase
-  const storeImage = (image) =>
-    new Promise((resolve, reject) => {
-      const storage = getStorage();
-      const filename = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`;
-      const storageRef = ref(storage, filename);
-      const uploadTask = uploadBytesResumable(storageRef, image);
+    const validTypes = ["image/jpeg", "image/png", "image/heic", "image/heif"];
+    let convertedImages = [];
 
-      uploadTask.on(
-        "state_changed",
-        null,
-        (error) => reject(error),
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then(resolve);
+    for (let file of images) {
+      if (!validTypes.includes(file.type)) {
+        setLoading(false);
+        toast.error(`Unsupported file type: ${file.name}`);
+        return;
+      }
+
+      if (file.type === "image/heic" || file.type === "image/heif") {
+        try {
+          const convertedBlob = await heic2any({
+            blob: file,
+            toType: "image/jpeg",
+            quality: 0.9
+          });
+          const convertedFile = new File([convertedBlob], `${file.name}.jpg`, {
+            type: "image/jpeg"
+          });
+          convertedImages.push(convertedFile);
+        } catch (error) {
+          console.error("HEIC conversion error:", error);
+          setLoading(false);
+          toast.error("Failed to convert HEIC image");
+          return;
         }
-      );
+      } else {
+        convertedImages.push(file);
+      }
+    }
+
+    async function storeImage(image) {
+      return new Promise((resolve, reject) => {
+        const storage = getStorage();
+        const filename = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`;
+        const storageRef = ref(storage, filename);
+        const uploadTask = uploadBytesResumable(storageRef, image);
+
+        uploadTask.on(
+          "state_changed",
+          null,
+          (error) => reject(error),
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then(resolve);
+          }
+        );
+      });
+    }
+
+    const imgUrls = await Promise.all([...convertedImages].map(storeImage)).catch(() => {
+      setLoading(false);
+      toast.error("Image upload failed");
+      return;
     });
 
-  const imgUrls = await Promise.all(convertedImages.map(storeImage)).catch((error) => {
-    console.error("Upload failed:", error);
-    toast.error("Image upload failed.");
+    const formDataCopy = {
+      ...formData,
+      imgUrls,
+      timestamp: serverTimestamp(),
+      userRef: auth.currentUser.uid,
+    };
+
+    delete formDataCopy.images;
+
+    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
     setLoading(false);
-    return;
-  });
-
-  const formDataCopy = {
-    ...formData,
-    imgUrls,
-    timestamp: serverTimestamp(),
-    userRef: auth.currentUser.uid,
-  };
-
-  delete formDataCopy.images;
-
-  await addDoc(collection(db, "listings"), formDataCopy);
-
-  setLoading(false);
-  toast.success("Listing created!");
-  navigate(`/category/${formDataCopy.type}`);
-}
-
+    toast.success("Listing created");
+    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
+  }
 
   if (loading) return <Spinner />;
 
@@ -220,4 +192,3 @@ export default function CreateMeal() {
     </main>
   );
 }
-

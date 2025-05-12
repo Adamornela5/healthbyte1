@@ -1,13 +1,13 @@
-// Enhanced CreateMeal Component with health sliders and tags
-import { useState } from "react"
+import { useState } from "react";
 import Spinner from "../components/Spinner";
 import { toast } from "react-toastify";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import heic2any from "heic2any";
 
 export default function CreateMeal() {
   const navigate = useNavigate();
@@ -24,27 +24,57 @@ export default function CreateMeal() {
     healthRating: 5,
     tags: ""
   });
+
   const { type, name, description, calories, images, healthRating, tags } = formData;
 
   function onChange(e) {
-    let boolean = null;
-    if (e.target.value === "true") boolean = true;
-    if (e.target.value === "false") boolean = false;
-
     if (e.target.files) {
       setFormData((prev) => ({ ...prev, images: e.target.files }));
     } else {
-      setFormData((prev) => ({ ...prev, [e.target.id]: boolean ?? e.target.value }));
+      setFormData((prev) => ({ ...prev, [e.target.id]: e.target.value }));
     }
   }
 
   async function onSubmit(e) {
     e.preventDefault();
     setLoading(true);
+
     if (images.length > 6) {
       setLoading(false);
       toast.error("Maximum of 6 images allowed");
       return;
+    }
+
+    const validTypes = ["image/jpeg", "image/png", "image/heic", "image/heif"];
+    let convertedImages = [];
+
+    for (let file of images) {
+      if (!validTypes.includes(file.type)) {
+        setLoading(false);
+        toast.error(`Unsupported file type: ${file.name}`);
+        return;
+      }
+
+      if (file.type === "image/heic" || file.type === "image/heif") {
+        try {
+          const convertedBlob = await heic2any({
+            blob: file,
+            toType: "image/jpeg",
+            quality: 0.9
+          });
+          const convertedFile = new File([convertedBlob], `${file.name}.jpg`, {
+            type: "image/jpeg"
+          });
+          convertedImages.push(convertedFile);
+        } catch (error) {
+          console.error("HEIC conversion error:", error);
+          setLoading(false);
+          toast.error("Failed to convert HEIC image");
+          return;
+        }
+      } else {
+        convertedImages.push(file);
+      }
     }
 
     async function storeImage(image) {
@@ -65,7 +95,7 @@ export default function CreateMeal() {
       });
     }
 
-    const imgUrls = await Promise.all([...images].map(storeImage)).catch(() => {
+    const imgUrls = await Promise.all([...convertedImages].map(storeImage)).catch(() => {
       setLoading(false);
       toast.error("Image upload failed");
       return;
@@ -79,6 +109,7 @@ export default function CreateMeal() {
     };
 
     delete formDataCopy.images;
+
     const docRef = await addDoc(collection(db, "listings"), formDataCopy);
     setLoading(false);
     toast.success("Listing created");
@@ -143,12 +174,22 @@ export default function CreateMeal() {
           className="w-full my-2 px-4 py-2 border rounded" />
 
         <p className="text-lg font-semibold mt-4">Images</p>
-        <input id="images" type="file" onChange={onChange} multiple required accept=".jpg,.png,.jpeg"
-          className="w-full my-2 px-3 py-1 border rounded" />
+        <input
+          id="images"
+          type="file"
+          onChange={onChange}
+          multiple
+          required
+          accept=".jpg,.jpeg,.png,.heic,.HEIC"
+          className="w-full my-2 px-3 py-1 border rounded"
+        />
 
         <button type="submit"
-          className="w-full mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Create Meal</button>
+          className="w-full mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          Create Meal
+        </button>
       </form>
     </main>
   );
 }
+

@@ -6,6 +6,7 @@
     "@tailwindcss/vite": "^4.0.9",
     "cra-template": "1.2.0",
     "firebase": "^11.4.0",
+    "heic2any": "^0.0.4",
     "moment": "^2.30.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

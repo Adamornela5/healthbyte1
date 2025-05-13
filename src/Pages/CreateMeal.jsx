@@ -39,46 +39,68 @@ export default function CreateMeal() {
     e.preventDefault();
     setLoading(true);
 
-    if (images.length > 6) {
+    if (!images || images.length === 0) {
+      toast.error("Please select at least one image.");
       setLoading(false);
-      toast.error("Maximum of 6 images allowed");
       return;
     }
 
-    const validTypes = ["image/jpeg", "image/png", "image/heic", "image/heif"];
-    let convertedImages = [];
+    if (images.length > 6) {
+      toast.error("Maximum of 6 images allowed.");
+      setLoading(false);
+      return;
+    }
+
+    const convertedImages = [];
 
     for (let file of images) {
-      if (!validTypes.includes(file.type)) {
-        setLoading(false);
-        toast.error(`Unsupported file type: ${file.name}`);
-        return;
-      }
+      const fileName = file.name.toLowerCase();
+      const fileType = file.type;
 
-      if (file.type === "image/heic" || file.type === "image/heif") {
+      const isHeic =
+        fileType === "image/heic" ||
+        fileType === "image/heif" ||
+        fileName.endsWith(".heic") ||
+        fileName.endsWith(".heif");
+
+      if (isHeic) {
         try {
           const convertedBlob = await heic2any({
             blob: file,
             toType: "image/jpeg",
-            quality: 0.9
+            quality: 0.9,
           });
-          const convertedFile = new File([convertedBlob], `${file.name}.jpg`, {
-            type: "image/jpeg"
+          const jpegFile = new File([convertedBlob], `${file.name}.jpeg`, {
+            type: "image/jpeg",
           });
-          convertedImages.push(convertedFile);
+          convertedImages.push(jpegFile);
         } catch (error) {
           console.error("HEIC conversion error:", error);
+          toast.error("Failed to convert HEIC image. Please try another.");
           setLoading(false);
-          toast.error("Failed to convert HEIC image");
           return;
         }
       } else {
-        convertedImages.push(file);
+        // Accept only jpeg/png with fallback
+        if (
+          fileType === "image/jpeg" ||
+          fileType === "image/png" ||
+          fileName.endsWith(".jpg") ||
+          fileName.endsWith(".jpeg") ||
+          fileName.endsWith(".png")
+        ) {
+          convertedImages.push(file);
+        } else {
+          toast.error(`Unsupported file type: ${file.name}`);
+          setLoading(false);
+          return;
+        }
       }
     }
 
-    async function storeImage(image) {
-      return new Promise((resolve, reject) => {
+    // Upload all images
+    const storeImage = (image) =>
+      new Promise((resolve, reject) => {
         const storage = getStorage();
         const filename = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`;
         const storageRef = ref(storage, filename);
@@ -93,13 +115,16 @@ export default function CreateMeal() {
           }
         );
       });
-    }
 
-    const imgUrls = await Promise.all([...convertedImages].map(storeImage)).catch(() => {
+    let imgUrls;
+    try {
+      imgUrls = await Promise.all(convertedImages.map(storeImage));
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Image upload failed. Try again.");
       setLoading(false);
-      toast.error("Image upload failed");
       return;
-    });
+    }
 
     const formDataCopy = {
       ...formData,
@@ -110,10 +135,11 @@ export default function CreateMeal() {
 
     delete formDataCopy.images;
 
-    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+    await addDoc(collection(db, "listings"), formDataCopy);
+
     setLoading(false);
-    toast.success("Listing created");
-    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
+    toast.success("Listing created!");
+    navigate(`/category/${formDataCopy.type}`);
   }
 
   if (loading) return <Spinner />;
@@ -124,7 +150,7 @@ export default function CreateMeal() {
       <form onSubmit={onSubmit}>
         <p className="text-lg mt-6 font-semibold">Healthy or Unhealthy?</p>
         <div className="flex">
-          {['healthy', 'unhealthy'].map((value) => (
+          {["healthy", "unhealthy"].map((value) => (
             <button
               key={value}
               type="button"
@@ -141,12 +167,25 @@ export default function CreateMeal() {
         </div>
 
         <p className="text-lg font-semibold mt-4">Name</p>
-        <input id="name" type="text" value={name} onChange={onChange} placeholder="Name"
-          required className="w-full my-2 px-4 py-2 border rounded" />
+        <input
+          id="name"
+          type="text"
+          value={name}
+          onChange={onChange}
+          placeholder="Name"
+          required
+          className="w-full my-2 px-4 py-2 border rounded"
+        />
 
         <p className="text-lg font-semibold mt-4">Description</p>
-        <textarea id="description" value={description} onChange={onChange} placeholder="Description"
-          required className="w-full my-2 px-4 py-2 border rounded"></textarea>
+        <textarea
+          id="description"
+          value={description}
+          onChange={onChange}
+          placeholder="Description"
+          required
+          className="w-full my-2 px-4 py-2 border rounded"
+        ></textarea>
 
         <p className="text-lg font-semibold mt-4">Health Rating</p>
         <div className="my-2">
@@ -166,12 +205,26 @@ export default function CreateMeal() {
         </div>
 
         <p className="text-lg font-semibold mt-4">Calories</p>
-        <input id="calories" type="number" value={calories} onChange={onChange} min="5" max="99999"
-          required className="w-full my-2 px-4 py-2 border rounded text-center" />
+        <input
+          id="calories"
+          type="number"
+          value={calories}
+          onChange={onChange}
+          min="5"
+          max="99999"
+          required
+          className="w-full my-2 px-4 py-2 border rounded text-center"
+        />
 
         <p className="text-lg font-semibold mt-4">Tags</p>
-        <input id="tags" type="text" value={tags} onChange={onChange} placeholder="e.g. #vegan #protein"
-          className="w-full my-2 px-4 py-2 border rounded" />
+        <input
+          id="tags"
+          type="text"
+          value={tags}
+          onChange={onChange}
+          placeholder="e.g. #vegan #protein"
+          className="w-full my-2 px-4 py-2 border rounded"
+        />
 
         <p className="text-lg font-semibold mt-4">Images</p>
         <input
@@ -180,12 +233,14 @@ export default function CreateMeal() {
           onChange={onChange}
           multiple
           required
-          accept=".jpg,.jpeg,.png,.heic,.HEIC"
+          accept="image/*"
           className="w-full my-2 px-3 py-1 border rounded"
         />
 
-        <button type="submit"
-          className="w-full mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        <button
+          type="submit"
+          className="w-full mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
           Create Meal
         </button>
       </form>

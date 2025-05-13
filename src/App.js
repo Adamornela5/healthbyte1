@@ -1,3 +1,5 @@
+import { inject } from '@vercel/analytics';
+inject(); 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
 import Offers from './Pages/Offers';

@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@tailwindcss/vite": "^4.0.9",
+    "@vercel/analytics": "^1.5.0",
     "cra-template": "1.2.0",
     "firebase": "^11.4.0",
     "heic2any": "^0.0.4",

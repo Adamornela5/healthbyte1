@@ -21,9 +21,11 @@ export default function Profile() {
   const auth = getAuth();
   const navigate = useNavigate();
 
+  // Local state
   const [changeDetail, setChangeDetail] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [username, setUsername] = useState("");
+  const [userData, setUserData] = useState(null); // 🔑 Store full user data
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [likedRecipes, setLikedRecipes] = useState([]);
@@ -66,7 +68,9 @@ export default function Profile() {
       const userRef = doc(db, "users", auth.currentUser.uid);
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {
-        setUsername(userSnap.data().username || "");
+        const data = userSnap.data();
+        setUsername(data.username || "");
+        setUserData(data); // ✅ Save full user document for follower/following info
       }
     }
 
@@ -133,16 +137,44 @@ export default function Profile() {
         <h1 className="text-4xl text-center mt-10 font-extrabold text-black tracking-tight drop-shadow-sm italic">
           My Profile
         </h1>
-        <p className="text-md text-blue-600 mt-1">@{username}</p>
 
-        <button
-          onClick={() => setShowDetails((prev) => !prev)}
-          className="w-full bg-blue-600 text-white uppercase px-7 py-3 text-sm font-medium mt-4
+        <div className="text-center mt-2">
+          <p className="text-md text-blue-600">@{username}</p>
+          <div className="flex gap-6 justify-center text-sm text-gray-600 mt-1">
+            <div className="text-center">
+              <p className="text-lg font-semibold">{userData?.followers?.length || 0}</p>
+              <p>Followers</p>
+            </div>
+            <div className="text-center">
+              <p className="text-lg font-semibold">{userData?.following?.length || 0}</p>
+              <p>Following</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-4 mt-4">
+            <button
+              onClick={() => setShowDetails((prev) => !prev)}
+              className="w-[200px] bg-blue-600 text-white uppercase px-4 py-3 text-sm font-medium
                 rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg
                 active:bg-blue-800"
-        >
-          {showDetails ? "Hide Profile settings ▲" : "Show Profile settings ▼"}
-        </button>
+            >
+              {showDetails ? "Hide Settings ▲" : "Show Settings ▼"}
+            </button>
+
+            <Link to="/create-meal">
+              <button
+                type="button"
+                className="w-[200px] bg-blue-600 text-white uppercase px-4 py-3 text-sm font-medium
+                  rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg
+                  active:bg-blue-800 flex items-center justify-center"
+              >
+                <CiForkAndKnife className="mr-2 text-2xl" />
+                Create Meal
+              </button>
+            </Link>
+        </div>
+
 
         {showDetails && (
           <div className="w-full md:w-[50%] mt-6 px-3">
@@ -190,17 +222,7 @@ export default function Profile() {
             </form>
           </div>
         )}
-        <button
-              type="submit"
-              className="w-full bg-blue-600 text-white uppercase px-7 py-3 text-sm font-medium mt-4
-                rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg
-                active:bg-blue-800"
-            >
-              <Link to="/create-meal" className="flex justify-center items-center">
-                <CiForkAndKnife className="mr-2 text-3xl " />
-                Create Meal
-              </Link>
-            </button>
+
       </section>
 
       {/* My Recipes */}

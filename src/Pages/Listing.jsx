@@ -79,49 +79,48 @@ export default function Listing() {
       <div className="w-full">
         
 
-      <div className="flex justify-start items-center space-x-4 w-[75%]">
-        <span className="text-2xl font-bold mb-3 text-blue-900">
-          {listing.name} 
-        </span>
-        <span className="text-[#457b9d] font-semibold mb-3">
-            🔥 {listing.calories?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} Calories
-          </span>
-          </div>
-          
+      {/* Title */}
+<div className="w-full mb-2">
+  <h1 className="text-2xl font-bold text-blue-900">{listing.name}</h1>
+</div>
 
-      <div className="flex justify-start items-center space-x-4 w-[75%]">
-      
-      
-      
-      <span className={`px-3 py-1 rounded-full text-white ${listing.type === "healthy" ? "bg-green-500" : "bg-red-500"}`}>
-                {listing.type}
-              </span>
-                  
-      <LikeButton
-        listingId={params.listingId}
-        initialCount={listing.likes || 0}
-        initialLiked={(listing.likedBy || []).includes(getAuth().currentUser?.uid)}
-        />
-      <div className="flex items-center gap-2 w-full max-w-xl">
-      <p className="text-sm text-gray-700 whitespace-nowrap">⭐ Health: {listing.healthRating}/10</p>
-      <div className="w-full bg-gray-200 rounded-full h-1">
-        <div
-          className="bg-green-500 h-1 rounded-full"
-          style={{ width: `${(listing.healthRating / 10) * 100}%` }}
-        >
-        </div>
-      </div>
-      
-      <p className="text-xs text-gray-500 whitespace-nowrap">
-        {listing.healthRating <= 3
-          ? "🧨 Treat Yo Self"
-          : listing.healthRating <= 6
-          ? "😌 Balanced"
-          : "💪 Super Clean"}
-      </p>
+{/* Health Bar */}
+<div className="w-full mb-1">
+  <div className="w-full bg-gray-200 rounded-full h-2">
+    <div
+      className="bg-green-500 h-2 rounded-full"
+      style={{ width: `${(listing.healthRating / 10) * 100}%` }}
+    ></div>
+  </div>
+</div>
 
-      </div>          
-      </div>
+{/* Health Style (🧨, 😌, 💪) */}
+<p className="text-xs text-gray-500 mb-2">
+  {listing.healthRating <= 3
+    ? "🧨 Treat Yo Self"
+    : listing.healthRating <= 6
+    ? "😌 Balanced"
+    : "💪 Super Clean"}
+</p>
+
+{/* Calories + Type + Like */}
+<div className="flex items-center space-x-4 mb-4">
+  <span className="text-[#457b9d] font-semibold">
+    🔥 {listing.calories?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} Calories
+  </span>
+
+  <span className={`px-3 py-1 rounded-full text-white ${listing.type === "healthy" ? "bg-green-500" : "bg-red-500"}`}>
+    {listing.type}
+  </span>
+
+  <LikeButton
+    listingId={params.listingId}
+    initialCount={listing.likes || 0}
+    initialLiked={(listing.likedBy || []).includes(getAuth().currentUser?.uid)}
+  />
+</div>
+
+ 
 
       <p className="mt-3 mb-3 break-words">
                   <span className="font-semibold">Description - </span>

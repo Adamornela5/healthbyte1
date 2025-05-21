@@ -1,5 +1,4 @@
-import { inject } from '@vercel/analytics';
-inject(); 
+import { inject } from '@vercel/analytics'; 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
 import Offers from './Pages/Offers';
@@ -17,6 +16,7 @@ import Listing from './Pages/Listing';
 import Category from './Pages/Category';
 import CreateUserName from './Pages/CreateUserName';
 import Randomizer from './Pages/Randomizer';
+inject(); 
 
 function App() {
   return (

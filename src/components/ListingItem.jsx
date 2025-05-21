@@ -31,8 +31,8 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
 
   return (
     <li className="relative bg-white flex flex-col justify-between items-center shadow-md hover:shadow-xl rounded-md overflow-hidden transition-shadow duration-150 m-[10px]">
-      
-      {/* Everything linkable (image, text, health bar, tags) */}
+
+      {/* Linkable content */}
       <Link to={`/category/${listing.type}/${id}`} className="w-full">
         <img
           className="h-[170px] w-full object-cover hover:scale-105 transition-scale duration-200 ease-in"
@@ -45,16 +45,10 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
         </p>
 
         <div className="w-full p-[10px] space-y-2">
+          {/* Title */}
           <p className="font-semibold text-xl truncate">{listing.name}</p>
 
-          {/* Username display */}
-          <p className="text-sm text-blue-500 truncate">@{username}</p>
-
-          <p className="text-[#457b9d] font-semibold">
-            🔥 {listing.calories?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} Calories
-          </p>
-          <p className="text-sm text-gray-700">⭐ Health: {listing.healthRating}/10</p>
-
+          {/* Health Bar under title */}
           <div className="w-full bg-gray-200 rounded-full h-1">
             <div
               className="bg-green-500 h-1 rounded-full"
@@ -62,6 +56,17 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
             ></div>
           </div>
 
+          {/* Username & Follow Button */}
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-blue-500 truncate">@{username}</p>
+          </div>
+
+          {/* Calories */}
+          <p className="text-[#457b9d] font-semibold">
+            🔥 {listing.calories?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} Calories
+          </p>
+
+          {/* Health Style */}
           <p className="text-xs text-gray-500 mt-1">
             {listing.healthRating <= 3
               ? "🧨 Treat Yo Self"
@@ -70,6 +75,7 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
               : "💪 Super Clean"}
           </p>
 
+          {/* Tags */}
           {listing.tags && (
             <div className="flex flex-wrap gap-1 mt-1">
               {listing.tags.split(" ").map((tag) => (
@@ -85,13 +91,18 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
         </div>
       </Link>
 
-      {/* Like button goes OUTSIDE the Link! */}
-      <div className="w-full px-[10px] pb-[10px]">
+      {/* Like button only (outside the Link) */}
+      <div
+        className="w-full px-[10px] pb-[10px] flex justify-start"
+        onClick={(e) => e.stopPropagation()}
+      >
         <LikeButton
           listingId={id}
+          targetUserId={listing.userRef} // ✅ Pass correct user ID
           initialCount={listing.likes || 0}
           initialLiked={(listing.likedBy || []).includes(auth.currentUser?.uid)}
         />
+
       </div>
 
       {/* Optional Edit/Delete buttons */}
@@ -110,4 +121,3 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
     </li>
   );
 }
-

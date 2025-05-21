@@ -2,8 +2,9 @@ import { useState } from "react";
 import { updateDoc, doc, arrayUnion, arrayRemove, increment } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../firebase";
+import  FollowButton from "./FollowButton";
 
-export default function LikeButton({ listingId, initialCount, initialLiked }) {
+export default function LikeButton({ listingId, targetUserId, initialCount, initialLiked }) {
   const auth = getAuth();
   const user = auth.currentUser;
   const [likeCount, setLikeCount] = useState(initialCount || 0);
@@ -54,6 +55,8 @@ export default function LikeButton({ listingId, initialCount, initialLiked }) {
   }
 
   return (
+    <div className="flex items-center space-x-2">
+      <FollowButton targetUserId={targetUserId} />
     <button
       onClick={toggleLike}
       className={`px-3 py-1 rounded ${
@@ -62,5 +65,8 @@ export default function LikeButton({ listingId, initialCount, initialLiked }) {
     >
       {hasLiked ? "♥ Liked" : "♡ Like"} {likeCount}
     </button>
+    </div>
+    
   );
 }
+

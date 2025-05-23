@@ -56,7 +56,7 @@ export default function Header() {
                }`}
                onClick={() => navigate("/randomizer")}
             >
-              Randomizer
+              Explore
             </li>
             <li
               className={`cursor-pointer py-3 text-sm font-semibold text-gray-400 border-b-[3px] border-b-transparent ${

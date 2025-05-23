@@ -16,6 +16,7 @@ import Listing from './Pages/Listing';
 import Category from './Pages/Category';
 import CreateUserName from './Pages/CreateUserName';
 import Randomizer from './Pages/Randomizer';
+import UserProfile from './Pages/UsersProfile';
 inject(); 
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
         <Route path="/sign-up" element={<SignUp />}></Route>
         <Route path="/forgot-password" element={<ForgotPassword />}></Route>
         <Route path="/randomizer" element={<Randomizer />} />
+        <Route path="/user/:userId" element={<UserProfile />} />
       </Routes>
     </Router>
     <ToastContainer 

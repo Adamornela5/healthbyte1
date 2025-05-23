@@ -226,7 +226,7 @@ export default function CreateMeal() {
           className="w-full my-2 px-4 py-2 border rounded"
         />
 
-        <p className="text-lg font-semibold mt-4">Images</p>
+        <p className="text-lg font-semibold mt-4">Images (Post one or more photos)</p>
         <input
           id="images"
           type="file"

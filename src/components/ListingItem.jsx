@@ -57,8 +57,14 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
           </div>
 
           {/* Username & Follow Button */}
-          <div className="flex items-center gap-2">
-            <p className="text-sm text-blue-500 truncate">@{username}</p>
+          <div className="flex items-center gap-2 px-[10px] pt-2 w-full">
+            <Link
+              to={`/user/${listing.userRef}`}
+              className="text-sm text-blue-500 hover:underline truncate"
+              onClick={(e) => e.stopPropagation()} // prevent bubbling into the main Link
+            >
+              @{username}
+            </Link>
           </div>
 
           {/* Calories */}
@@ -96,6 +102,7 @@ export default function ListingItem({ listing, id, onEdit, onDelete }) {
         className="w-full px-[10px] pb-[10px] flex justify-start"
         onClick={(e) => e.stopPropagation()}
       >
+      
         <LikeButton
           listingId={id}
           targetUserId={listing.userRef} // ✅ Pass correct user ID

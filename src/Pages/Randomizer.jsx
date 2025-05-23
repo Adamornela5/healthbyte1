@@ -59,7 +59,6 @@ export default function Randomizer() {
 
   return (
     <div className="max-w-6xl mx-auto px-3 py-6">
-      <h1 className="text-3xl text-center font-bold mb-6">Recipe Randomizer</h1>
 
       {/* Category Filter Buttons */}
       <div className="flex justify-center mb-2 gap-4">

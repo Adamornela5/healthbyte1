@@ -16,7 +16,7 @@ import Listing from './Pages/Listing';
 import Category from './Pages/Category';
 import CreateUserName from './Pages/CreateUserName';
 import Randomizer from './Pages/Randomizer';
-import UserProfile from './Pages/UsersProfile';
+import UserProfile from './Pages/UsersProfile'; //ignore the red line, it is a bug in the IDE
 inject(); 
 
 function App() {

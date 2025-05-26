@@ -1,20 +1,17 @@
 import { useEffect, useState } from "react";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { toast } from "react-toastify";
 import Spinner from "../components/Spinner";
 import ListingItem from "../components/ListingItem";
 import { getAuth } from "firebase/auth";
+// import axios from "axios"; // Import axios for API calls (AI-related, temporarily commented out)
 
 export default function Randomizer() {
   const [randomListing, setRandomListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("all");
+  // const [labels, setLabels] = useState([]); // State to hold AI predictions (AI-related)
   const auth = getAuth();
 
   useEffect(() => {
@@ -24,6 +21,7 @@ export default function Randomizer() {
   async function fetchRandomListing() {
     setLoading(true);
     setRandomListing(null);
+    // setLabels([]); // Clear previous labels (AI-related)
 
     try {
       let listingsRef = collection(db, "listings");
@@ -46,10 +44,24 @@ export default function Randomizer() {
       }
 
       const randomIndex = Math.floor(Math.random() * listings.length);
-      setRandomListing(listings[randomIndex]);
+      const selectedListing = listings[randomIndex];
+      setRandomListing(selectedListing);
       setLoading(false);
+
+      // 🔍 AI prediction functionality (temporarily commented out)
+      /*
+      const imageUrl = selectedListing.data.imgUrls?.[0];
+      if (imageUrl) {
+        const response = await axios.post(
+          "https://us-central1-healthbyte-c33bc.cloudfunctions.net/analyzeImageLabels",
+          { imageUrl }
+        );
+        setLabels(response.data.labels || []);
+      }
+      */
+
     } catch (error) {
-      console.error("Error fetching listings:", error);
+      console.error("Error fetching listings or labels:", error);
       toast.error("Could not fetch recipes");
       setLoading(false);
     }
@@ -59,8 +71,6 @@ export default function Randomizer() {
 
   return (
     <div className="max-w-6xl mx-auto px-3 py-6">
-
-      {/* Category Filter Buttons */}
       <div className="flex justify-center mb-2 gap-4">
         {["all", "healthy", "unhealthy"].map((type) => (
           <button
@@ -75,69 +85,79 @@ export default function Randomizer() {
         ))}
       </div>
 
-      {/* Generate Button */}
       <div className="flex flex-col items-center">
-        {/* Display the Random Listing */}
         {randomListing ? (
-          <ul className="sm:grid sm:grid-cols-1 mt-6 mb-6">
-            <ListingItem
-              key={randomListing.id}
-              id={randomListing.id}
-              listing={randomListing.data}
-              showActions={false}
-            />
-          </ul>
+          <>
+            <ul className="sm:grid sm:grid-cols-1 mt-6 mb-6">
+              <ListingItem
+                key={randomListing.id}
+                id={randomListing.id}
+                listing={randomListing.data}
+                showActions={false}
+              />
+            </ul>
+
+            {/* AI Predictions display (temporarily commented out)
+            {labels.length > 0 && (
+              <div className="mt-4 bg-gray-100 p-4 rounded shadow max-w-xl w-full">
+                <h3 className="font-semibold text-lg mb-2">AI Predictions:</h3>
+                <ul className="list-disc pl-5 text-sm text-gray-700">
+                  {labels.map((label, index) => (
+                    <li key={index}>
+                      {label.description} ({(label.score * 100).toFixed(1)}%)
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            */}
+          </>
         ) : (
           <p className="text-gray-500">No recipes available in this category</p>
         )}
-        
-       
-<button
-  onClick={fetchRandomListing}
-  class=" relative inline-flex items-center justify-center px-8 py-2.5 overflow-hidden tracking-tighter text-white bg-gray-800 rounded-md group"
->
-  <span
-    class="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-600 rounded-full group-hover:w-56 group-hover:h-56"
-  ></span>
-  <span class="absolute bottom-0 left-0 h-full -ml-2">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="w-auto h-full opacity-100 object-stretch"
-      viewBox="0 0 487 487"
-    >
-      <path
-        fill-opacity=".1"
-        fill-rule="nonzero"
-        fill="#FFF"
-        d="M0 .3c67 2.1 134.1 4.3 186.3 37 52.2 32.7 89.6 95.8 112.8 150.6 23.2 54.8 32.3 101.4 61.2 149.9 28.9 48.4 77.7 98.8 126.4 149.2H0V.3z"
-      ></path>
-    </svg>
-  </span>
-  <span class="absolute top-0 right-0 w-12 h-full -mr-3">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="object-cover w-full h-full"
-      viewBox="0 0 487 487"
-    >
-      <path
-        fill-opacity=".1"
-        fill-rule="nonzero"
-        fill="#FFF"
-        d="M487 486.7c-66.1-3.6-132.3-7.3-186.3-37s-95.9-85.3-126.2-137.2c-30.4-51.8-49.3-99.9-76.5-151.4C70.9 109.6 35.6 54.8.3 0H487v486.7z"
-      ></path>
-    </svg>
-  </span>
-  <span
-    class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-gray-200"
-  ></span>
-  <span class="relative text-base font-semibold">    Next    </span>
-</button>
 
+        <button
+          onClick={fetchRandomListing}
+          class=" relative inline-flex items-center justify-center px-8 py-2.5 overflow-hidden tracking-tighter text-white bg-gray-800 rounded-md group"
+        >
+          <span
+            class="absolute w-0 h-0 transition-all duration-500 ease-out bg-blue-600 rounded-full group-hover:w-56 group-hover:h-56"
+          ></span>
+          <span class="absolute bottom-0 left-0 h-full -ml-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-auto h-full opacity-100 object-stretch"
+              viewBox="0 0 487 487"
+            >
+              <path
+                fill-opacity=".1"
+                fill-rule="nonzero"
+                fill="#FFF"
+                d="M0 .3c67 2.1 134.1 4.3 186.3 37 52.2 32.7 89.6 95.8 112.8 150.6 23.2 54.8 32.3 101.4 61.2 149.9 28.9 48.4 77.7 98.8 126.4 149.2H0V.3z"
+              ></path>
+            </svg>
+          </span>
+          <span class="absolute top-0 right-0 w-12 h-full -mr-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="object-cover w-full h-full"
+              viewBox="0 0 487 487"
+            >
+              <path
+                fill-opacity=".1"
+                fill-rule="nonzero"
+                fill="#FFF"
+                d="M487 486.7c-66.1-3.6-132.3-7.3-186.3-37s-95.9-85.3-126.2-137.2c-30.4-51.8-49.3-99.9-76.5-151.4C70.9 109.6 35.6 54.8.3 0H487v486.7z"
+              ></path>
+            </svg>
+          </span>
+          <span
+            class="absolute inset-0 w-full h-full -mt-1 rounded-lg opacity-30 bg-gradient-to-b from-transparent via-transparent to-gray-200"
+          ></span>
+          <span class="relative text-base font-semibold">    Next    </span>
+        </button>
 
-
-  
       </div>
     </div>
   );
 }
-

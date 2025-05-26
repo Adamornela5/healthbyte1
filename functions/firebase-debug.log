@@ -1,0 +1,65 @@
+[debug] [2025-05-25T18:59:24.161Z] ----------------------------------------------------------------------
+[debug] [2025-05-25T18:59:24.163Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\adamo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js functions:shell
+[debug] [2025-05-25T18:59:24.163Z] CLI Version:   14.4.0
+[debug] [2025-05-25T18:59:24.163Z] Platform:      win32
+[debug] [2025-05-25T18:59:24.163Z] Node Version:  v21.6.2
+[debug] [2025-05-25T18:59:24.163Z] Time:          Sun May 25 2025 11:59:24 GMT-0700 (Pacific Daylight Time)
+[debug] [2025-05-25T18:59:24.163Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-05-25T18:59:24.316Z] Field "/functions/runtime" in "firebase.json" is possibly invalid: must be equal to one of the allowed values
+[debug] [2025-05-25T18:59:24.316Z] Field "/functions" in "firebase.json" is possibly invalid: must be array
+[debug] [2025-05-25T18:59:24.316Z] Field "/functions" in "firebase.json" is possibly invalid: must match a schema in anyOf
+[debug] [2025-05-25T18:59:24.321Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-05-25T18:59:24.322Z] > authorizing via signed-in user (healthbyte99@gmail.com)
+[debug] [2025-05-25T18:59:24.322Z] [iam] checking project healthbyte-c33bc for permissions ["firebase.projects.get"]
+[debug] [2025-05-25T18:59:24.323Z] Checked if tokens are valid: true, expires at: 1748201759090
+[debug] [2025-05-25T18:59:24.323Z] Checked if tokens are valid: true, expires at: 1748201759090
+[debug] [2025-05-25T18:59:24.324Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/healthbyte-c33bc:testIamPermissions [none]
+[debug] [2025-05-25T18:59:24.324Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/healthbyte-c33bc:testIamPermissions x-goog-quota-user=projects/healthbyte-c33bc
+[debug] [2025-05-25T18:59:24.324Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/healthbyte-c33bc:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-05-25T18:59:24.883Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/healthbyte-c33bc:testIamPermissions 200
+[debug] [2025-05-25T18:59:24.883Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/healthbyte-c33bc:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-05-25T18:59:24.885Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2025-05-25T18:59:24.902Z] defaultcredentials: writing to file C:\Users\adamo\AppData\Roaming\firebase\healthbyte99_gmail_com_application_default_credentials.json
+[debug] [2025-05-25T18:59:24.904Z] DEBUG: Setting GAC to C:\Users\adamo\AppData\Roaming\firebase\healthbyte99_gmail_com_application_default_credentials.json
+[debug] [2025-05-25T18:59:24.904Z] Checked if tokens are valid: true, expires at: 1748201759090
+[debug] [2025-05-25T18:59:24.904Z] Checked if tokens are valid: true, expires at: 1748201759090
+[debug] [2025-05-25T18:59:24.904Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/healthbyte-c33bc/adminSdkConfig [none]
+[debug] [2025-05-25T18:59:25.488Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/healthbyte-c33bc/adminSdkConfig 200
+[debug] [2025-05-25T18:59:25.489Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/healthbyte-c33bc/adminSdkConfig {"projectId":"healthbyte-c33bc","storageBucket":"healthbyte-c33bc.firebasestorage.app"}
+[debug] [2025-05-25T18:59:25.506Z] [functions] Watching "C:\Users\adamo\OneDrive\Attachments\Documents\FULL_STACK\health-byte\functions" for Cloud Functions...
+[debug] [2025-05-25T18:59:25.509Z] Validating nodejs source
+[debug] [2025-05-25T18:59:27.182Z] > [functions] package.json contents: {
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "22"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/vision": "^5.1.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2025-05-25T18:59:27.182Z] Building nodejs source
+[debug] [2025-05-25T18:59:27.183Z] Failed to find version of module node: reached end of search path C:\Users\adamo\OneDrive\Attachments\Documents\FULL_STACK\health-byte\functions\node_modules
+[warn] !  functions: Your requested "node" version "18" doesn't match your global version "21". Using node@21 from host. 
+[debug] [2025-05-25T18:59:27.185Z] Could not find functions.yaml. Must use http discovery
+[debug] [2025-05-25T18:59:27.192Z] Found firebase-functions binary at 'C:\Users\adamo\OneDrive\Attachments\Documents\FULL_STACK\health-byte\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8624
+
+[debug] [2025-05-25T18:59:28.153Z] Got response from /__/functions.yaml {"endpoints":{"analyzeImageLabels":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"analyzeImageLabels"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
